@@ -2,14 +2,16 @@
 
 # Motion Blur Restoration Pro
 
-**A focused Digital Image Processing workspace for model-based motion blur restoration.**
+### A Digital Image Processing Lab for Model-Based Motion Blur Restoration
 
 [![CI](https://github.com/gudla0098-arch/Motion-Blur-Restoration-Pro/actions/workflows/smoke-check.yml/badge.svg?branch=main)](https://github.com/gudla0098-arch/Motion-Blur-Restoration-Pro/actions/workflows/smoke-check.yml)
 [![Python](https://img.shields.io/badge/Python-3.12-3776AB?logo=python&logoColor=white)](https://www.python.org/)
-[![FastAPI](https://img.shields.io/badge/API-FastAPI-009688?logo=fastapi&logoColor=white)](https://fastapi.tiangolo.com/)
-[![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
+[![FastAPI](https://img.shields.io/badge/API-FastAPI-009688?logo=fastapi)](https://fastapi.tiangolo.com/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
-[**Repository**](https://github.com/gudla0098-arch/Motion-Blur-Restoration-Pro) · [Report an issue](https://github.com/gudla0098-arch/Motion-Blur-Restoration-Pro/issues)
+**Model · Restore · Compare · Learn**
+
+[Live Demo](https://motion-blur-restoration-pro-raju-d9aa.vercel.app) · [Documentation](docs/ARCHITECTURE.md) · [Report a Bug](https://github.com/gudla0098-arch/Motion-Blur-Restoration-Pro/issues/new/choose)
 
 </div>
 
@@ -17,102 +19,106 @@
 
 ## Overview
 
-Motion blur occurs when a camera or subject moves while an image is being captured. This project provides an interactive workflow to model that movement with a **point-spread function (PSF)** and attempt image restoration through **Wiener deconvolution**.
+Motion blur appears when a camera or subject moves while an image is being exposed. **Motion Blur Restoration Pro** is an interactive learning and experimentation tool that models this blur with a point-spread function (PSF), then attempts to recover image detail using frequency-domain Wiener deconvolution.
 
-Upload an image, select an approximate blur model, tune the motion parameters, and compare or download the restored output.
+Choose an approximate motion model, tune its parameters, process an image, and compare the result with the original.
 
-## Highlights
+> **Scientific scope:** This is model-based restoration using a user-selected PSF prior. It does not automatically estimate an unknown blur kernel (blind deconvolution).
 
-- **Purpose-built interface:** responsive restoration workspace with an image upload panel, model selection, parameter controls, and results comparison.
-- **Image input:** PNG, JPG/JPEG, and WEBP uploads (maximum 12 MB and 4 million pixels).
-- **Four PSF approximations:** linear, circular, uniform, and non-uniform.
-- **Interactive parameters:** motion length, motion angle, and Wiener regularization strength.
-- **Image restoration:** frequency-domain Wiener filtering with NumPy and FFT.
-- **Output:** side-by-side input/output preview and WEBP download.
-- **API:** FastAPI endpoints for processing and result retrieval.
-- **Quality checks:** GitHub Actions smoke checks for syntax, routes, PSF normalization, and image restoration.
+## Key features
+
+| Feature | Description |
+|---|---|
+| Interactive workspace | Responsive dark interface for image upload, model selection and processing |
+| Four motion models | Linear, circular, uniform and non-uniform PSF approximations |
+| Parameter controls | Motion length, angle and Wiener regularization strength |
+| Restoration engine | NumPy FFT-based Wiener deconvolution across RGB channels |
+| Result comparison | Original and restored image previews |
+| Export | Download the restored image as WEBP |
+| API | FastAPI endpoints for processing, health checks and result retrieval |
+| Automated checks | GitHub Actions smoke tests for syntax, routes and image-processing functions |
 
 ## How it works
 
 ```text
-       Upload an image
-              |
-              v
-       Select blur model
-              |
-              v
-   Set motion length and angle
-              |
-              v
-     Construct normalized PSF
-              |
-              v
-     Wiener deconvolution
-              |
-              v
-     Compare and download
+       INPUT IMAGE
+            |
+            v
+   SELECT MOTION MODEL
+            |
+            v
+  SET LENGTH / ANGLE / STRENGTH
+            |
+            v
+    CONSTRUCT PSF KERNEL
+            |
+            v
+   WIENER DECONVOLUTION
+            |
+            v
+  PREVIEW  -->  COMPARE  -->  DOWNLOAD
 ```
 
-## Blur models
+### Supported motion models
 
-| Model | Approximation |
+| Model | What it approximates |
 |---|---|
-| Linear | Directional straight-line movement with a weighted kernel |
-| Circular | Approximate rotational movement around the image centre |
-| Uniform | Constant-weight straight-line movement |
-| Non-uniform | Curved movement trajectory approximation |
+| **Linear** | Directional straight-line movement with weighted samples |
+| **Circular** | Rotational movement around an approximate centre |
+| **Uniform** | Straight-line movement with constant kernel weights |
+| **Non-uniform** | A curved trajectory with changing direction |
 
-## Scientific scope and limitations
+## Technology stack
 
-This application performs **model-based restoration**, not blind estimation of an unknown blur kernel. The user chooses a model and supplies motion parameters; the backend constructs a PSF prior and applies Wiener deconvolution.
+- **Frontend:** HTML5, CSS3, vanilla JavaScript
+- **Backend:** Python 3.12, FastAPI
+- **Image processing:** NumPy, Pillow, FFT and Wiener filtering
+- **Deployment:** Vercel
+- **CI:** GitHub Actions
 
-The circular and non-uniform models are simplified approximations. Deconvolution cannot reliably recover information that was never captured. Results depend on the accuracy of the selected model, image noise, and blur severity. Treat the output as an estimate rather than a guaranteed reconstruction of the original scene.
-
-## Technology
-
-| Layer | Tools |
-|---|---|
-| Frontend | HTML5, CSS3, JavaScript |
-| Backend | Python, FastAPI |
-| Image processing | NumPy, Pillow, FFT-based Wiener filtering |
-| Hosting configuration | Vercel |
-| Continuous integration | GitHub Actions |
-
-## Repository structure
+## Project structure
 
 ```text
-.
-├── .github/workflows/
-│   └── smoke-check.yml       # Automated checks
+Motion-Blur-Restoration-Pro/
+├── .github/
+│   ├── ISSUE_TEMPLATE/          # Bug and feature request forms
+│   ├── workflows/               # Automated CI checks
+│   └── PULL_REQUEST_TEMPLATE.md
 ├── api/
-│   └── index.py              # Vercel ASGI entry point
+│   └── index.py                 # Vercel ASGI entry point
 ├── backend/
-│   └── main.py               # API and image processing
-├── motion-blur.html          # Main workspace
-├── motion-blur.css           # Workspace styling
-├── motion-blur.js            # Upload, controls and API calls
-├── styles.css                # Shared design foundation
-├── requirements.txt
-├── vercel.json
+│   └── main.py                  # FastAPI routes and restoration engine
+├── docs/
+│   └── ARCHITECTURE.md          # System design and processing details
+├── motion-blur.html             # Main application interface
+├── motion-blur.css              # Workspace styles
+├── motion-blur.js               # Browser interactions and API calls
+├── styles.css                   # Shared design foundation
+├── requirements.txt             # Python dependencies
+├── vercel.json                  # Vercel configuration
+├── CHANGELOG.md
+├── CITATION.cff
+├── CONTRIBUTING.md
 ├── LICENSE
-└── README.md
+├── README.md
+└── SECURITY.md
 ```
 
-## Run locally
+## Quick start
 
 ### Requirements
 
 - Python 3.12
 - Git
 
-### 1. Clone
+### 1. Clone the repository
 
 ```bash
 git clone https://github.com/gudla0098-arch/Motion-Blur-Restoration-Pro.git
 cd Motion-Blur-Restoration-Pro
 ```
 
-### 2. Create a virtual environment
+### 2. Create and activate a virtual environment
 
 **Windows PowerShell**
 ```powershell
@@ -133,13 +139,15 @@ python -m pip install --upgrade pip
 pip install -r requirements.txt
 ```
 
-### 4. Start the server
+### 4. Run the application
 
 ```bash
 uvicorn backend.main:app --reload
 ```
 
-Open http://127.0.0.1:8000/motion-blur. Interactive API documentation is at http://127.0.0.1:8000/docs.
+Open **http://127.0.0.1:8000/motion-blur**.
+
+Interactive API documentation: **http://127.0.0.1:8000/docs**
 
 ## API reference
 
@@ -150,50 +158,79 @@ Accepts `multipart/form-data`.
 | Field | Type | Default | Description |
 |---|---|---:|---|
 | `image` | File | Required | PNG, JPG/JPEG or WEBP image |
-| `blur_type` | String | `linear` | `linear`, `circular`, `uniform`, or `non-uniform` |
-| `length` | Integer | `18` | Motion length in pixels; bounded to valid image dimensions |
+| `blur_type` | String | `linear` | `linear`, `circular`, `uniform` or `non-uniform` |
+| `length` | Integer | `18` | Motion length in pixels |
 | `angle` | Number | `0` | Motion direction in degrees (0–180) |
 | `strength` | Number | `0.008` | Wiener regularization (0.001–0.05) |
 
-A successful response includes the model and processing parameters, plus `processed_url`.
+Successful responses include the selected parameters and a `processed_url` for the generated output.
 
-### `GET /api/result/{filename}`
+### Other endpoints
 
-Returns a generated WEBP image by its server-generated filename.
+| Method | Endpoint | Purpose |
+|---|---|---|
+| GET | `/api/health` | Service health response |
+| GET | `/api/result/{filename}` | Retrieve a generated WEBP result |
+| GET | `/` or `/motion-blur` | Serve the application |
 
-### `GET /api/health`
+## Configuration and limits
 
-Returns a small service health response.
+- Accepted formats: PNG, JPEG and WEBP.
+- Maximum upload size: 12 MB.
+- Maximum image dimensions: 4 million pixels in total.
+- Generated results are written to `MOTION_OUTPUT_DIR`, defaulting to `/tmp/motion-blur-restoration`.
+- On serverless hosting, local output storage is temporary and may not persist between instances or deployments. Download results promptly.
 
-## Deploy to Vercel
+## Scientific limitations
 
-The repository includes a Vercel configuration with `api/index.py` as its Python ASGI entry point.
-
-1. Import `gudla0098-arch/Motion-Blur-Restoration-Pro` into Vercel.
-2. Keep the repository root as the project root.
-3. Deploy using the included `vercel.json`.
-4. Test the health endpoint, upload, restoration, preview, and download on the deployed URL.
-
-Generated results use temporary server storage. On serverless hosting, this storage is not permanent; download a result while it remains available.
+- The PSF is built from user-provided model and parameter estimates; the application does not infer an unknown kernel from the image.
+- Circular and non-uniform kernels are simplified approximations of motion trajectories.
+- Wiener deconvolution balances inverse filtering and noise suppression; it cannot guarantee recovery of details lost during capture.
+- Output quality depends on the selected model, parameter accuracy, image noise and blur severity.
+- Very small images may not support the selected kernel size.
 
 ## Quality checks
 
-The GitHub Actions workflow runs on pushes and pull requests to `main`. It checks Python compilation, JavaScript syntax, API routes, normalized PSF kernels for all four models, and a small Wiener restoration smoke test.
+The GitHub Actions workflow runs on pushes and pull requests to `main`. It currently checks:
 
-These automated smoke checks do not replace browser testing against a live deployment.
+1. Python compilation.
+2. JavaScript syntax.
+3. Expected FastAPI routes.
+4. Normalization of all four PSF kernels.
+5. A small Wiener restoration smoke test.
+
+These checks are not a substitute for end-to-end browser testing on a deployed environment.
+
+## Deployment
+
+This repository includes a Vercel configuration and the ASGI entry point at `api/index.py`.
+
+1. Import this repository into your Vercel account.
+2. Set the project root to the repository root.
+3. Keep the included Vercel configuration.
+4. Deploy and verify `/api/health`.
+5. Test image upload, restoration, result preview and download.
+
+See [Vercel's deployment documentation](https://vercel.com/docs/deployments) for platform-specific configuration.
 
 ## Contributing
 
-See [CONTRIBUTING.md](CONTRIBUTING.md) for local verification and pull request guidance.
+Contributions and suggestions are welcome. Please read [CONTRIBUTING.md](CONTRIBUTING.md) before opening a pull request. Use the issue templates to report bugs or propose improvements.
+
+## Security
+
+Please do not publish credentials, private images, or sensitive information in issues. For vulnerability reports, follow [SECURITY.md](SECURITY.md).
 
 ## License
 
-Released under the [MIT License](LICENSE).
+Distributed under the [MIT License](LICENSE).
 
----
+## Acknowledgements
+
+Built as a Digital Image Processing project to explore point-spread functions, frequency-domain filtering and practical image restoration.
 
 <div align="center">
 
-**Built as a Digital Image Processing project.**
+**Made for learning, experimentation and image processing.**
 
 </div>
