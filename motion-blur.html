@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#080b12">
+  <meta name="description" content="A digital image processing lab for modeling motion blur and restoring images with Wiener deconvolution.">
+  <title>Motion Lab — Motion Blur Restoration</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/styles.css">
+  <link rel="stylesheet" href="/motion-blur.css">
+</head>
+<body class="motion-page">
+  <header class="topbar">
+    <a class="brand" href="/motion-blur" aria-label="Motion Lab home"><span class="brand-mark">M<span>.</span></span><span class="brand-name">MOTION<span>LAB</span></span></a>
+    <nav class="top-nav" aria-label="Main navigation"><a class="nav-active" href="/motion-blur">Restoration workspace</a><a href="#how-it-works">How it works</a></nav>
+    <div class="topbar-meta"><span class="live-dot"></span><span>IMAGE PROCESSING LAB</span><span class="version-tag">v1.0</span></div>
+  </header>
+
+  <main class="page-shell">
+    <section class="hero">
+      <div class="hero-copy">
+        <p class="eyebrow"><span class="eyebrow-line"></span> DIGITAL IMAGE PROCESSING / 01</p>
+        <h1>Bring motion<br><em>back into focus.</em></h1>
+        <p class="hero-description">Model motion blur, tune the restoration parameters, and recover image detail with a classical Wiener deconvolution workflow.</p>
+        <div class="hero-footnote"><span class="mini-check">✓</span> Runs on your uploaded image <span class="footnote-divider"></span> PNG · JPG · WEBP</div>
+      </div>
+      <div class="hero-visual" aria-label="Abstract motion blur to sharp image visualization">
+        <div class="visual-label">SIGNAL / RECONSTRUCTION</div>
+        <div class="visual-grid"></div>
+        <div class="visual-bars bars-blur"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+        <div class="visual-sweep"></div>
+        <div class="visual-bars bars-sharp"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+        <div class="visual-bottom"><span>BLURRED INPUT</span><span>RESTORED OUTPUT</span></div>
+        <div class="visual-coordinates">x 128.4&nbsp;&nbsp; y 064.2&nbsp;&nbsp; PSF ACTIVE</div>
+      </div>
+    </section>
+
+    <section class="workspace" aria-labelledby="workspace-title">
+      <div class="section-heading">
+        <div><p class="eyebrow">01 — WORKSPACE</p><h2 id="workspace-title">Configure your restoration</h2></div>
+        <div class="workspace-status"><span class="status-dot"></span> READY FOR INPUT</div>
+      </div>
+      <div class="workspace-grid">
+        <div class="workspace-main">
+          <section class="panel input-panel" aria-labelledby="input-title">
+            <div class="panel-heading"><div><span class="step-index">01</span><h3 id="input-title">Input image</h3></div><span class="panel-hint">MAX 12 MB / 4 MP</span></div>
+            <div class="dropzone" id="motion-drop" tabindex="0" role="button" aria-label="Choose or drop an image">
+              <input id="motion-file" type="file" accept="image/png,image/jpeg,image/webp" hidden>
+              <div class="drop-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 16V4m0 0L7.5 8.5M12 4l4.5 4.5M4 16.5v2A1.5 1.5 0 0 0 5.5 20h13a1.5 1.5 0 0 0 1.5-1.5v-2"/></svg></div>
+              <strong>Drop your image to get started</strong>
+              <span>Drag and drop, or <button id="browse-motion" class="inline-action" type="button">browse files</button></span>
+              <small>Supported formats: PNG, JPG, WEBP</small>
+            </div>
+            <div class="file-card" id="motion-selected" hidden><img id="motion-original-thumb" alt="Selected image preview"><div class="file-details"><strong id="motion-filename"></strong><span id="motion-dimensions"></span></div><span class="file-ready"><i></i> READY</span><button id="clear-motion" class="remove-file" type="button" aria-label="Remove selected image">×</button></div>
+          </section>
+
+          <section class="panel model-panel" aria-labelledby="model-title">
+            <div class="panel-heading"><div><span class="step-index">02</span><h3 id="model-title">Motion model</h3></div><span class="panel-hint">SELECT ONE MODEL</span></div>
+            <div class="model-grid" role="group" aria-label="Motion blur type">
+              <button class="model-card active" data-blur="linear" type="button"><span class="model-symbol"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 19 19 4M8 19h11V8"/></svg></span><strong>Linear</strong><small>Directional movement</small><span class="model-selected">SELECTED</span></button>
+              <button class="model-card" data-blur="circular" type="button"><span class="model-symbol"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 12a8 8 0 1 1-2.35-5.65M20 4v6h-6"/></svg></span><strong>Circular</strong><small>Rotational movement</small><span class="model-selected">SELECTED</span></button>
+              <button class="model-card" data-blur="uniform" type="button"><span class="model-symbol"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 7h13m-4-4 4 4-4 4M3 17h18"/></svg></span><strong>Uniform</strong><small>Constant motion</small><span class="model-selected">SELECTED</span></button>
+              <button class="model-card" data-blur="non-uniform" type="button"><span class="model-symbol"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 17c3-12 6-12 9-5s6 7 9-5"/></svg></span><strong>Non-uniform</strong><small>Variable trajectory</small><span class="model-selected">SELECTED</span></button>
+            </div>
+            <p class="model-description" id="model-note">A straight-line point-spread function models directional camera or subject movement.</p>
+          </section>
+
+          <section class="panel parameters-panel" aria-labelledby="parameters-title">
+            <div class="panel-heading"><div><span class="step-index">03</span><h3 id="parameters-title">Restoration parameters</h3></div><span class="panel-hint">FINE-TUNE THE PSF</span></div>
+            <div class="parameter-list">
+              <label class="parameter-control"><span class="parameter-top"><span><strong>Motion length</strong><small>Estimated movement distance</small></span><output id="length-value">18 <i>PX</i></output></span><input id="motion-length" type="range" min="3" max="45" value="18"><span class="range-ends"><span>3 PX</span><span>45 PX</span></span></label>
+              <label class="parameter-control"><span class="parameter-top"><span><strong>Motion angle</strong><small>Direction of movement</small></span><output id="angle-value">0<i>°</i></output></span><input id="motion-angle" type="range" min="0" max="180" value="0"><span class="range-ends"><span>0°</span><span>180°</span></span></label>
+              <label class="parameter-control"><span class="parameter-top"><span><strong>Restoration strength</strong><small>Wiener regularization factor</small></span><output id="strength-value">0.008</output></span><input id="motion-strength" type="range" min="1" max="50" value="8"><span class="range-ends"><span>0.001</span><span>0.050</span></span></label>
+            </div>
+            <div class="parameter-note"><span>ⓘ</span><p>Parameter values define an approximate blur kernel. The best result depends on how closely the selected model matches the original motion.</p></div>
+            <button id="restore-motion" class="restore-button" type="button" disabled><span class="button-spark">✳</span><span>Estimate & restore image</span><span class="button-arrow">↗</span></button>
+            <p class="motion-status" id="motion-status" role="status" aria-live="polite">Upload an image to enable restoration.</p>
+          </section>
+        </div>
+
+        <aside class="workspace-side">
+          <section class="panel pipeline-panel">
+            <div class="panel-heading"><div><span class="step-index">FLOW</span><h3>Processing pipeline</h3></div><span class="pipeline-count">05 STEPS</span></div>
+            <ol class="pipeline">
+              <li class="pipeline-done"><span class="pipeline-number">01</span><div><strong>Image acquisition</strong><small>Read image dimensions and pixels</small></div></li>
+              <li><span class="pipeline-number">02</span><div><strong>Blur model selection</strong><small>Choose a motion PSF prior</small></div></li>
+              <li><span class="pipeline-number">03</span><div><strong>Kernel construction</strong><small>Build a normalized PSF</small></div></li>
+              <li><span class="pipeline-number">04</span><div><strong>Wiener restoration</strong><small>Perform frequency-domain filtering</small></div></li>
+              <li><span class="pipeline-number">05</span><div><strong>Output evaluation</strong><small>Preview and download the result</small></div></li>
+            </ol>
+          </section>
+          <section class="side-note"><span class="side-note-icon">⌁</span><div><strong>About this method</strong><p>Wiener deconvolution balances blur inversion with noise suppression using a regularization term.</p><a href="#how-it-works">Explore the process <span>↗</span></a></div></section>
+          <section class="side-specs"><span class="eyebrow">ENGINE</span><div><span>PROCESSING</span><strong>FFT / WIENER</strong></div><div><span>IMAGE LIBRARY</span><strong>NUMPY + PILLOW</strong></div><div><span>API</span><strong>FASTAPI</strong></div></section>
+        </aside>
+      </div>
+    </section>
+
+    <section class="results-section" id="motion-results" hidden>
+      <div class="section-heading results-title"><div><p class="eyebrow">02 — OUTPUT</p><h2>Restoration results</h2><p class="results-subtitle">Compare the original input with the reconstructed image.</p></div><a id="download-motion" class="download-button" href="#" download="restored-image.webp"><span>↓</span> Download result</a></div>
+      <div class="comparison-grid"><figure><figcaption><span>01 / ORIGINAL INPUT</span><span class="image-tag">SOURCE</span></figcaption><div class="image-stage"><img id="result-input" alt="Original uploaded image"></div></figure><figure><figcaption><span>02 / RESTORED OUTPUT</span><span class="image-tag image-tag-blue">PROCESSED</span></figcaption><div class="image-stage"><img id="result-output" alt="Restored image"></div></figure></div>
+      <div class="result-metadata" id="result-meta"></div>
+    </section>
+
+    <section class="method-section" id="how-it-works">
+      <div class="method-intro"><p class="eyebrow">03 — UNDER THE HOOD</p><h2>Restoration is a<br><em>modeled process.</em></h2><p>Motion blur occurs when a camera or subject moves during exposure. This lab builds an approximate point-spread function (PSF) from the parameters you provide, then applies Wiener deconvolution to attempt recovery.</p></div>
+      <div class="method-steps"><article><span>01 / MODEL</span><h3>Describe the motion</h3><p>Select a blur model and provide an estimated direction and length to define the PSF prior.</p></article><article><span>02 / DECONVOLVE</span><h3>Recover image detail</h3><p>Use a frequency-domain Wiener filter to reverse the modeled blur while limiting noise amplification.</p></article><article><span>03 / INSPECT</span><h3>Evaluate the output</h3><p>Compare the restored image with the input. Results are estimates, not guaranteed reconstructions.</p></article></div>
+      <div class="method-disclaimer"><span>IMPORTANT SCOPE NOTE</span><p>This project is model-based restoration, not blind estimation of an unknown blur kernel. Circular and non-uniform options are simplified approximations. Severe blur, noise, and inaccurate parameters can limit restoration quality.</p></div>
+    </section>
+    <footer class="site-footer"><a class="brand" href="/motion-blur"><span class="brand-mark">M<span>.</span></span><span class="brand-name">MOTION<span>LAB</span></span></a><span>DIGITAL IMAGE PROCESSING PROJECT</span><span>BUILT FOR EXPLORATION <b>↗</b></span></footer>
+  </main>
+  <script src="/motion-blur.js"></script>
+</body>
+</html>
