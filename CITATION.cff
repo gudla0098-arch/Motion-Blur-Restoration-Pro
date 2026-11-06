@@ -1,0 +1,12 @@
+cff-version: 1.2.0
+message: "If you use this project in academic work, please cite it."
+title: "Motion Blur Restoration Pro"
+type: software
+authors:
+  - family-names: Gudla
+    given-names: Raju
+repository-code: "https://github.com/gudla0098-arch/Motion-Blur-Restoration-Pro"
+url: "https://motion-blur-restoration-pro-raju-d9aa.vercel.app"
+license: MIT
+version: 1.0.0
+date-released: 2026-11-06
